@@ -1,0 +1,386 @@
+#! /usr/bin/perl
+
+# dh_php - PHP configuration helper for debhelper
+# Copyright (C) 2012 Arno Töll <debian@toell.net>
+#               2013 Ondřej Surý <ondrej@sury.org>
+#
+# This program is licensed at your choice under the terms of the GNU
+# General Public License version 2+ or under the terms of the Apache
+# Software License 2.0.
+#
+# For GPL-2+:
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+#
+# For ASF 2.0:
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+use strict;
+use File::Find;
+use List::MoreUtils qw(uniq);
+use Debian::Debhelper::Dh_Lib;
+
+=head1 NAME
+
+dh_php - register configuration snippets to the PHP
+
+=cut
+
+=head1 SYNOPSIS
+
+B<dh_php> [S<I<debhelper options>>] [S<B<--conditional>>=I<expression>] [B<--error-handler=>I<function>] [B<-n>|B<--noscripts>] [B<--php-version=>I<php_version>]
+
+=head1 DESCRIPTION
+
+B<dh_php> is a debhelper program that is responsible for correctly installing
+PHP configuration snippets and setting postinst, prerm and dependencies in
+PHP web server modules and web applications.
+
+It supports the following configuration types
+
+=over 4
+
+=item *
+PHP modules
+
+=back
+
+B<dh_php> supports only a configuration file driven approach. If a
+file named debian/I<package>.php exists, actual actions are determined by
+that file.
+
+=head1 OPERATION MODES
+
+B<dh_php> can only be used in a configuration file driven approach.
+The configuration driven mode is fully documented in the B<FILES>
+section below.  This mode is activated by supplying a L<debhelper(7)>
+configuration file (e.g. debian/I<package>.php).
+
+=head1 INVOCATION
+
+B<dh_php> is not part of debhelper and might require information
+available in the php-all-dev package.  Packages making use of
+B<dh_php> should declare a build-dependency against the virtual
+B<dh-php> package.
+
+B<dh_php> supports both, called directly from a debian/rules file or
+as L<dh(1)> addon.  In the former case the helper should run after
+L<dh_install(1)> or their respective counter parts in local
+implementations at earliest.  Alternatively it can be used as L<dh>
+addon by invoking it with
+
+  %:
+     dh $@ --with php
+
+=head1 FILES
+
+=over 4
+
+=item debian/I<package>.php
+
+=item debian/php
+
+=back
+
+Lists files to be registered with the PHP. The file is interpreted
+as line separated list of installation stanzas, where each entry
+consists of whitespace separated values conforming to the file
+semantics below.
+
+=head2 FILE SEMANTICS
+
+Each line consists of a triple
+
+I<type> I<file> [I<arguments>]
+
+where the values are interpreted as follows:
+
+=head3 I<type>
+
+Denotes the type of file to be installed. Recognized values are B<mod>
+for PHP modules.
+
+=head3 I<file>
+
+Is interpreted as existing file name within the source package. No
+path expansion is effectuated.  Just like L<dh_install(1)>, B<dh_php>
+can not rename files.
+
+=head2 MODULES
+
+Modules are handled specially and are determined by the B<mod> type.
+Modules can have a I<.ini> suffix.  In that case the file is
+interpreted as a module configuration file respectively and is
+installed to I</etc/php/<VERSION(s)>/mods-available>.  If the file is
+ending with a I<.so> suffix it is interpreted as actual module shared
+object and is installed to the PHP module directory.  Moreover, if a
+I<.ini> file is installed the configuration is activated in the
+maintainer script at installation time.
+
+A typical module configuration has two lines, one for the I<.ini>
+file, and one for the I<.so> file, albeit the latter could be
+installed by upstream's makefile, too.
+
+B<dh_php> will set dependencies in B<${php:Depends}> accordingly when
+this type of configuration is found.
+
+=head1 OPTIONS
+
+=over 4
+
+=item B<--php-version=>I<php_version>
+
+Make all calls to PHP versioned with <php_version>, e.g. php-config
+becomes php-config<php_version>.
+
+=item B<--error-handler=>I<function>
+
+Call the named shell I<function> if running the maintainer script fails.  The
+function should be provided in the F<prerm> and F<postinst> scripts, before the
+B<#DEBHELPER#> token.
+
+=item B<-e>, B<--noenable>
+
+Install maintainer scripts accordingly, but do not enable the scripts or
+configuration by default.
+
+=item B<-n>, B<--noscripts>
+
+Do not modify F<preinst>/F<postinst>/F<postrm>/F<prerm> maintainer scripts.
+
+
+=back
+
+=head1 NOTES
+
+Note that this command is not idempotent.  L<dh_prep(1)> should be called
+between invocations of this command.  Otherwise, it may cause multiple
+instances of the same text to be added to maintainer scripts.
+
+=head1 EXAMPLES
+
+The examples below lists valid entries for a debian/I<package>.php file.  For
+example, the two lines below install a fictional I<foo> PHP module along
+a Debian specific I<.ini> file:
+
+ mod src/foo/foo.so
+ mod debian/foo.ini
+
+=head1 SEE ALSO
+
+L<phpquery>(8), L<debhelper>(7), L<dh>(1)
+
+=head1 AUTHOR
+
+This manual and L<dh_php> was written by Arno Toell <debian@toell.net>
+for Apache 2 and modified for PHP by Ondrej Sury <ondrej@sury.org>.
+
+=cut
+
+
+##
+## main code starts here
+##
+
+init(options => { "e|noenable" => \$dh{NOENABLE},
+		  "php-version=s" => \$dh{PHP_VERSION}});
+
+sub php_versions
+{
+    my @PHP_VERSIONS = split '\n', `/usr/sbin/phpquery -V`;
+    return @PHP_VERSIONS;
+}
+
+sub php_api_version
+{
+    my $version = shift;
+    my $API = `php-config$version --phpapi`;
+    chomp $API;
+    return "phpapi-$API";
+}
+
+sub php_version
+{
+    my $version = shift;
+    my $SERVER_VERSION = `php-config$version --version`;
+    chomp $SERVER_VERSION;
+    return ">= $SERVER_VERSION~";
+}
+
+sub php_api_installdir
+{
+    my $version = shift;
+    my $MODULE_DIR = `php-config$version --extension-dir`;
+    chomp $MODULE_DIR;
+    return $MODULE_DIR;
+}
+
+sub php_conf_installdir
+{
+    my $version = shift;
+    my $type = shift;
+    return "etc/php/${version}/${type}-available/"
+}
+
+foreach my $package ((@{$dh{DOPACKAGES}}))
+{
+	my %PACKAGE_TYPE = (
+		has_a_module => [],
+		dependency_line => "",
+		handler => $dh{ERROR_HANDLER}
+	);
+
+	my $file = pkgfile($package, "php");
+
+	my $tmp  = tmpdir($package);
+
+	my @versions;
+
+	if ($dh{PHP_VERSION}) {
+		@versions = split ' ', $dh{PHP_VERSION};
+	} elsif ($ENV{'DH_PHP_VERSIONS'}) {
+		@versions = split ' ', $ENV{'DH_PHP_VERSIONS'};
+	} else {
+		@versions = php_versions();
+	}
+
+	my @files_to_register = filedoublearray($file, ".") if $file;
+	foreach my $line (@files_to_register)
+	{
+		my $type = lc(shift @{$line}) if $line->[0];
+		my $source = shift @{$line} if $line->[0];
+		my @arguments = map {"$_ "} @{$line};
+
+		$type .= "s" unless $type eq "conf";
+
+		if ($type eq "mods")
+		{
+			my $basesource = basename($source);
+
+			error("module: \"$basesource\" needs .so or .ini suffix") if $basesource !~ m/\.(ini|so)/;
+
+			foreach my $version (@versions)
+			{
+				if ($basesource =~ m/\.ini$/)
+				{
+					my $confinstalldir = $tmp . "/" . php_conf_installdir($version, $type);
+					my $enablename = $basesource;
+					$enablename =~ s/\.ini$//;
+					push @{$PACKAGE_TYPE{'has_a_module'}}, $enablename;
+					verbose_print("Installing module configuration $enablename into $confinstalldir\n");
+					if (! -d $confinstalldir)
+					{
+						complex_doit("mkdir","-p",$confinstalldir);
+						complex_doit("chmod","755","$confinstalldir");
+					}
+					complex_doit("cp",$source,$confinstalldir);
+					complex_doit("chmod","644","$confinstalldir/$basesource");
+				}
+				elsif ($basesource =~ m/\.so$/)
+				{
+					my $modinstalldir = $tmp . "/" . php_api_installdir($version);
+					verbose_print("Installing module binary $source into $modinstalldir\n");
+					if (! -d $modinstalldir)
+					{
+						complex_doit("mkdir","-p", $modinstalldir);
+						complex_doit("chmod","755","$modinstalldir");
+					}
+					complex_doit("cp", $source, $modinstalldir);
+				}
+			}
+		}
+		else
+		{
+			error("Unknown type parameter: $type\n");
+		}
+	}
+
+	my @postinst_autoscripts;
+
+	if ($#{$PACKAGE_TYPE{'has_a_module'}} >= 0)
+	{
+		if ($package !~ m/php-\w+?/)
+		{
+			warning("Package $package appears to be an PHP module. It should comply to the package naming scheme php-<modulename>\n");
+		}
+
+		my $depends = "php-common (>= 1:7.0+33~)";
+
+		my @api_versions;
+		foreach my $version (@versions)
+		{
+		    push @api_versions, php_api_version($version);
+		}
+# Disable the dependency on the phpapi for the transition period
+#		$depends .= ", " . join(" | ", @api_versions);
+		addsubstvar($package, "php:Depends", $depends);
+		
+		my $modules = join(" ", uniq(@{$PACKAGE_TYPE{'has_a_module'}}));
+		push @postinst_autoscripts, ["enmod", $modules];
+	}
+
+	if (! $dh{NOSCRIPTS})
+	{
+		foreach my $ref (@postinst_autoscripts)
+		{
+			for my $script_type (qw/preinst postinst prerm postrm/)
+			{
+				if ($script_type eq "postinst" && $dh{NOENABLE})
+				{
+					next
+				}
+
+				my %replacements = (
+					HELPER => $ref->[0],
+					NAMES  => $ref->[1],
+					ERROR_HANDLER => $PACKAGE_TYPE{handler},
+					VERSIONS => join(" ", @versions)
+				);
+
+				if ($script_type eq "prerm" || $script_type eq "postrm")
+				{
+					$replacements{'HELPER'} =~ s/en/dis/;
+				}
+
+				my $sed_command = "";
+				foreach my $key (sort keys %replacements)
+				{
+					my $val = $replacements{$key};
+					# Use a control char as separator for sed, to
+					# reduce escaping issues. Everything else is
+					# passed verbatim, i.e. it must not contain any
+					# shell or sed special characters.
+					my $sep = "\x17";
+					$sed_command .= "s" . $sep . "#$key#" .
+							      $sep . $val .
+							      $sep . "g; ";
+				}
+
+				autoscript($package, "$script_type", "$script_type-php", $sed_command);
+			}
+		}
+	}
+}
+
+# vim: syntax=perl sw=8 sts=8 sr noet

@@ -1,0 +1,16 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+%:
+	dh $@ 
+
+override_dh_auto_clean:
+	dh_auto_clean
+	rm -f dh_php.1
+
+override_dh_installman:
+	pod2man dh_php > dh_php.1
+	dh_installman dh_php.1

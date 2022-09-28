@@ -1,0 +1,36 @@
+#!/bin/sh
+
+if [ ! -x /usr/sbin/phpquery ]; then
+    echo "php-defaults must be installed"
+    exit 1;
+fi
+if ! command -v xml2 >/dev/null; then
+    echo "xml2 must be installed"
+fi
+
+for ver in $(/usr/sbin/phpquery -V); do
+    for package_xml in "package-${ver}.xml" "package-$(echo "${ver}" | cut -f 1 -d .).xml" package.xml; do
+	if [ -f "$package_xml" ]; then
+	    break
+	fi
+	package_xml=
+    done
+
+    if [ -z "${package_xml}" ]; then
+	continue
+    fi
+
+    min_ver=$(xml2 < "${package_xml}" | sed -ne "s,^/package/dependencies/required/php/min=\([0-9]\+\.[0-9]\+\).*,\1,p")
+    max_ver=$(xml2 < "${package_xml}" | sed -ne "s,^/package/dependencies/required/php/max=\([0-9]\+\.[0-9]\+\).*,\1,p")
+
+    if [ -n "$min_ver" ] && dpkg --compare-versions "$ver" lt "$min_ver"; then
+	continue;
+    fi
+    if [ -n "$max_ver" ] && dpkg --compare-versions "$ver" ge "$max_ver"; then
+	continue;
+    fi
+
+    echo "${ver}"
+done
+
+exit 0

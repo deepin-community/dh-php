@@ -1,0 +1,25 @@
+Source: dh-php
+Section: php
+Priority: optional
+Maintainer: Debian PHP Maintainers <team+pkg-php@tracker.debian.org>
+Uploaders: Ondřej Surý <ondrej@debian.org>
+Build-Depends: debhelper (>= 10),
+               php-all-dev (>= 80~)
+Standards-Version: 4.5.1
+Vcs-Git: https://salsa.debian.org/php-team/dh-php.git
+Vcs-Browser: https://salsa.debian.org/php-team/dh-php
+
+Package: dh-php
+Architecture: all
+Depends: debhelper,
+         liblist-moreutils-perl,
+         perl,
+         xml2,
+         ${misc:Depends}
+Description: debhelper add-on to handle PHP PECL extensions
+ dh-php provides a debhelper sequence add-on named 'php' and the
+ dh_php command.
+ .
+ The dh_php command adds the appropriate code to the postinst, prerm
+ and postrm maint scripts to properly enable/disable PHP PECL
+ extensions for all available PHP SAPIs.

@@ -1,0 +1,416 @@
+dh-php (4.1) UNRELEASED; urgency=medium
+
+  * update
+
+ -- Debian PHP Maintainers <team+pkg-php@tracker.debian.org>  Wed, 25 May 2022 10:54:06 +0800
+
+dh-php (4.1) unstable; urgency=medium
+
+  * Fix packages where source package name is not php-<ext>
+
+ -- Ondřej Surý <ondrej@debian.org>  Wed, 10 Nov 2021 12:37:20 +0100
+
+dh-php (4) unstable; urgency=medium
+
+  * Improve the debian/control generating scripts
+
+ -- Ondřej Surý <ondrej@debian.org>  Wed, 10 Nov 2021 11:11:12 +0100
+
+dh-php (3.1) unstable; urgency=medium
+
+  * Finish the current round of updates to dh-php
+
+ -- Ondřej Surý <ondrej@debian.org>  Sat, 20 Feb 2021 17:54:27 +0100
+
+dh-php (3.0.7) unstable; urgency=medium
+
+  * Allow overriding PHP_DEFAULT_VERSION with PHP_DEFAULT_VERSION_OVERRIDE
+
+ -- Ondřej Surý <ondrej@debian.org>  Sat, 20 Feb 2021 16:43:22 +0100
+
+dh-php (3.0.6) unstable; urgency=medium
+
+  * Fix extra . at end of PHP_DEFAULT_VERSION
+
+ -- Ondřej Surý <ondrej@debian.org>  Sat, 20 Feb 2021 15:56:53 +0100
+
+dh-php (3.0.5) unstable; urgency=medium
+
+  * Properly quote '$' in php-config sed
+  * Revert "Fix adding the php-all-dev to php-<pecl>-all-dev"
+
+ -- Ondřej Surý <ondrej@debian.org>  Sat, 20 Feb 2021 13:22:31 +0100
+
+dh-php (3.0.4) unstable; urgency=medium
+
+  * Fix adding the php-all-dev to php-<pecl>-all-dev
+
+ -- Ondřej Surý <ondrej@debian.org>  Sat, 20 Feb 2021 12:51:15 +0100
+
+dh-php (3.0.3) unstable; urgency=medium
+
+  * Explicitly add php-all-dev to generated php-<pecl>-all-dev packages
+
+ -- Ondřej Surý <ondrej@debian.org>  Sat, 20 Feb 2021 11:10:16 +0100
+
+dh-php (3.0.2) unstable; urgency=medium
+
+  * Filter-out mbstring and xml from -all-dev generation
+
+ -- Ondřej Surý <ondrej@debian.org>  Sat, 20 Feb 2021 11:07:47 +0100
+
+dh-php (3.0.1) unstable; urgency=medium
+
+  * Revert "Filter-out more extensions included in the base PHP packages"
+  * Filter-out pcre extension
+
+ -- Ondřej Surý <ondrej@debian.org>  Sat, 20 Feb 2021 10:57:18 +0100
+
+dh-php (3.0) unstable; urgency=medium
+
+  * Fix generating php-<pecl> and php-<pecl>-all-dev dependencies
+  * Build-Depend on php-all-dev (>= 80~) to pull the needed dependencies
+
+ -- Ondřej Surý <ondrej@debian.org>  Sat, 20 Feb 2021 07:46:49 +0100
+
+dh-php (2.99.2) unstable; urgency=medium
+
+  * Fix couple of typos in pkg-pecl.mk
+  * Pull the default PHP version from php-config
+
+ -- Ondřej Surý <ondrej@debian.org>  Sat, 20 Feb 2021 07:18:25 +0100
+
+dh-php (2.99.1) unstable; urgency=medium
+
+  * Filter-out more extensions included in the base PHP packages
+
+ -- Ondřej Surý <ondrej@debian.org>  Fri, 19 Feb 2021 21:16:56 +0100
+
+dh-php (2.99.0) unstable; urgency=medium
+
+  * Remove the old versions' conffiles cleaning code
+  * Introduce the php-<pecl_name>-all-dev that depends on all version and
+    make php-<pecl_name> depend on just php<default_ver>-<pecl_name>
+
+ -- Ondřej Surý <ondrej@debian.org>  Fri, 19 Feb 2021 20:56:28 +0100
+
+dh-php (2.4) unstable; urgency=medium
+
+  * Add extra phpX.Y-common Depends to generated packages (GH #1535)
+
+ -- Ondřej Surý <ondrej@debian.org>  Sun, 14 Feb 2021 16:02:56 +0100
+
+dh-php (2.3) unstable; urgency=medium
+
+  * Disable the dependency on the phpapi-<date> packages
+
+ -- Ondřej Surý <ondrej@debian.org>  Mon, 12 Oct 2020 07:16:39 +0200
+
+dh-php (2.2) unstable; urgency=medium
+
+  * Add missing self-depends on the main package
+
+ -- Ondřej Surý <ondrej@debian.org>  Sun, 11 Oct 2020 15:24:01 +0200
+
+dh-php (2.1) unstable; urgency=medium
+
+  * Add more standard extensions to strip from dependencies, replace
+    libxml with xml
+
+ -- Ondřej Surý <ondrej@debian.org>  Sun, 11 Oct 2020 14:23:56 +0200
+
+dh-php (2.0) unstable; urgency=medium
+
+  * Parse package.xml for dependencies and use them
+
+ -- Ondřej Surý <ondrej@debian.org>  Sun, 11 Oct 2020 14:05:20 +0200
+
+dh-php (1.5) unstable; urgency=medium
+
+  * Add gbp.conf for main branch
+  * Bump standards version to 4.5.0.3 (no change)
+
+ -- Ondřej Surý <ondrej@debian.org>  Sat, 10 Oct 2020 16:21:33 +0200
+
+dh-php (1.4) unstable; urgency=medium
+
+  * Remove the extra versioning of meta packages
+
+ -- Ondřej Surý <ondrej@debian.org>  Mon, 28 Sep 2020 16:17:57 +0200
+
+dh-php (1.3) unstable; urgency=medium
+
+  * Fix the meta-package versioning
+
+ -- Ondřej Surý <ondrej@debian.org>  Mon, 28 Sep 2020 15:44:31 +0200
+
+dh-php (1.2) unstable; urgency=medium
+
+  * Improve the versioning of the meta-package
+
+ -- Ondřej Surý <ondrej@debian.org>  Mon, 28 Sep 2020 15:19:14 +0200
+
+dh-php (1.1) unstable; urgency=medium
+
+  * Fix the pecl:Depends dh_gencontrol invocation
+
+ -- Ondřej Surý <ondrej@debian.org>  Mon, 28 Sep 2020 14:50:09 +0200
+
+dh-php (1.0) unstable; urgency=medium
+
+  * Add better Depends from old package to new binary packages
+
+ -- Ondřej Surý <ondrej@debian.org>  Mon, 28 Sep 2020 14:16:26 +0200
+
+dh-php (0.39) unstable; urgency=medium
+
+  * Add magic to add Breaks and Replaces from binary to old binary
+
+ -- Ondřej Surý <ondrej@debian.org>  Mon, 28 Sep 2020 14:12:22 +0200
+
+dh-php (0.38) unstable; urgency=medium
+
+  * Modify INSTALL_ROOT to be separate for each PHP version build
+
+ -- Ondřej Surý <ondrej@debian.org>  Mon, 28 Sep 2020 13:33:00 +0200
+
+dh-php (0.37) unstable; urgency=medium
+
+  * Dynamically create a list of phpX.Y-name packages
+
+ -- Ondřej Surý <ondrej@debian.org>  Mon, 28 Sep 2020 13:11:45 +0200
+
+dh-php (0.36) unstable; urgency=medium
+
+  * Convert to debhelper 10
+
+ -- Ondřej Surý <ondrej@debian.org>  Mon, 21 Sep 2020 15:22:09 +0200
+
+dh-php (0.35) unstable; urgency=medium
+
+  [ Kunal Mehta ]
+  * pkg-pecl: Run tests during package build (Closes: #913773)
+
+  [ Ondřej Surý ]
+  * Silence find error when inidir is not yet created
+
+ -- Ondřej Surý <ondrej@debian.org>  Tue, 17 Dec 2019 11:31:16 +0100
+
+dh-php (0.34) unstable; urgency=medium
+
+  * Disable and re-enable module in preinst to handle priority changes in
+    the modules
+
+ -- Ondřej Surý <ondrej@debian.org>  Sun, 04 Nov 2018 04:03:22 +0000
+
+dh-php (0.33) unstable; urgency=medium
+
+  * Make the empty directory remove less prone to errors
+
+ -- Ondřej Surý <ondrej@debian.org>  Mon, 15 Oct 2018 09:41:50 +0000
+
+dh-php (0.32) unstable; urgency=medium
+
+  * Use dpkg-query --listfiles to get the list of old configuration files
+  * Change the priority from extra to optional
+
+ -- Ondřej Surý <ondrej@debian.org>  Mon, 15 Oct 2018 09:24:34 +0000
+
+dh-php (0.31) unstable; urgency=medium
+
+  * Cleanup stale config files from no longer supported PHP versions
+    (Closes: #906744)
+
+ -- Ondřej Surý <ondrej@debian.org>  Sun, 14 Oct 2018 08:34:06 +0000
+
+dh-php (0.30) unstable; urgency=medium
+
+  * Update the maintainer email to team+pkg-php@tracker.debian.org
+
+ -- Ondřej Surý <ondrej@debian.org>  Mon, 09 Jul 2018 12:21:51 +0000
+
+dh-php (0.29) unstable; urgency=medium
+
+  * Update the Vcs-* to salsa.d.o
+
+ -- Ondřej Surý <ondrej@debian.org>  Thu, 04 Jan 2018 15:42:54 +0000
+
+dh-php (0.28) unstable; urgency=medium
+
+  * Update the Vcs-* links to https://gitlab.com/deb.sury.org
+
+ -- Ondřej Surý <ondrej@debian.org>  Fri, 04 Aug 2017 10:02:39 +0200
+
+dh-php (0.27) unstable; urgency=medium
+
+  * Change Vcs-* URLs to gitlab.sury.org
+
+ -- Ondřej Surý <ondrej@debian.org>  Fri, 04 Aug 2017 10:02:36 +0200
+
+dh-php (0.26) unstable; urgency=medium
+
+  * Update Vcs-Browser URL (Closes: #849257)
+  * Bump standards version (no change)
+
+ -- Ondřej Surý <ondrej@debian.org>  Sat, 31 Dec 2016 13:14:07 +0100
+
+dh-php (0.25) unstable; urgency=medium
+
+  * Fix --as-needed problem in php-imagick and put --as-needed back
+
+ -- Ondřej Surý <ondrej@debian.org>  Thu, 15 Dec 2016 15:52:37 +0100
+
+dh-php (0.24) unstable; urgency=medium
+
+  * Disable --as-needed as PHP_CHECK_FUNC() fails to order the objects
+    properly
+
+ -- Ondřej Surý <ondrej@debian.org>  Thu, 15 Dec 2016 15:17:22 +0100
+
+dh-php (0.23) unstable; urgency=medium
+
+  * Take only first two numbers and ignore rest for PHP_MIN_VER and
+    PHP_MAX_VER
+
+ -- Ondřej Surý <ondrej@debian.org>  Mon, 07 Nov 2016 12:26:15 +0100
+
+dh-php (0.22) unstable; urgency=medium
+
+  * Add logic to limit minimum and maximum PHP versions from package*xml
+
+ -- Ondřej Surý <ondrej@debian.org>  Wed, 12 Oct 2016 17:00:37 +0200
+
+dh-php (0.21) unstable; urgency=medium
+
+  * Fix the final cleanup loop in postrm
+
+ -- Ondřej Surý <ondrej@debian.org>  Thu, 16 Jun 2016 09:03:25 +0200
+
+dh-php (0.20) unstable; urgency=medium
+
+  * Don't fail when d/<package>.php is not present to not break multiple
+    binary package builds
+
+ -- Ondřej Surý <ondrej@debian.org>  Fri, 03 Jun 2016 16:17:41 +0200
+
+dh-php (0.19) unstable; urgency=medium
+
+  * Fix simple typo in previous changes
+
+ -- Ondřej Surý <ondrej@debian.org>  Mon, 02 May 2016 11:37:12 +0200
+
+dh-php (0.18) unstable; urgency=medium
+
+  * Add support for multiple PHP versions with --php-version='5.5 5.6' or
+    environment variable DH_PHP_VERSIONS="7.0 7.1"
+
+ -- Ondřej Surý <ondrej@debian.org>  Mon, 02 May 2016 10:21:04 +0200
+
+dh-php (0.17) unstable; urgency=medium
+
+  * Add PECL_CONFIGURE_MAINT_APPEND variable to add more configure options
+
+ -- Ondřej Surý <ondrej@debian.org>  Fri, 29 Apr 2016 19:43:30 +0200
+
+dh-php (0.16) unstable; urgency=medium
+
+  * Read /package/name from package.xml to guess PECL extension directory
+    name itself and don't rely on Debian package name mapping
+
+ -- Ondřej Surý <ondrej@debian.org>  Fri, 29 Apr 2016 15:38:47 +0200
+
+dh-php (0.15) unstable; urgency=medium
+
+  * The PECL_SOURCE_* filling loop has to be outside the ifeq
+
+ -- Ondřej Surý <ondrej@debian.org>  Fri, 29 Apr 2016 13:27:23 +0200
+
+dh-php (0.14) unstable; urgency=medium
+
+  * Use _OVERRIDE variables to allow builds for non-overriden builds
+
+ -- Ondřej Surý <ondrej@debian.org>  Fri, 29 Apr 2016 13:21:36 +0200
+
+dh-php (0.13) unstable; urgency=medium
+
+  * Make DH_PHP_VERSIONS and PECL_SOURCE overridable
+
+ -- Ondřej Surý <ondrej@debian.org>  Fri, 29 Apr 2016 11:49:29 +0200
+
+dh-php (0.12) unstable; urgency=medium
+
+  * Add makefile snippets for automatic PECL extension building
+
+ -- Ondřej Surý <ondrej@debian.org>  Fri, 29 Apr 2016 09:50:59 +0200
+
+dh-php (0.11) unstable; urgency=medium
+
+  * Include pod2man generated man page in the package (Closes: #821860)
+
+ -- Ondřej Surý <ondrej@debian.org>  Wed, 20 Apr 2016 14:43:10 +0200
+
+dh-php (0.10) unstable; urgency=medium
+
+  * Even better cleanup of enabled modules in postrm remove and purge
+
+ -- Ondřej Surý <ondrej@debian.org>  Wed, 02 Mar 2016 19:04:06 +0100
+
+dh-php (0.9) unstable; urgency=medium
+
+  * Cleanup old symlinks to /etc/php/mods-available in preinst script
+
+ -- Ondřej Surý <ondrej@debian.org>  Wed, 02 Mar 2016 15:56:30 +0100
+
+dh-php (0.8) unstable; urgency=medium
+
+  * Rewrite [ -x /usr/sbin/php#HELPER# ] as which php#HELPER# >/dev/null
+    to prevent lintian warning about absolute paths
+
+ -- Ondřej Surý <ondrej@debian.org>  Mon, 29 Feb 2016 21:49:24 +0100
+
+dh-php (0.7) unstable; urgency=medium
+
+  * Remove support for pure configuration snippets in dh_php
+  * Install ini files into versioned directories /etc/php/X.Y/mods-available
+  * Remove the old configuration file in /etc/php/mods-available (if it
+    exists)
+
+ -- Ondřej Surý <ondrej@debian.org>  Mon, 29 Feb 2016 11:52:34 +0100
+
+dh-php (0.6) unstable; urgency=medium
+
+  * Depend on at least one phpapi-<ver>, but not a specific one
+
+ -- Ondřej Surý <ondrej@debian.org>  Thu, 31 Dec 2015 09:24:29 +0100
+
+dh-php (0.5) unstable; urgency=medium
+
+  * Add support for dh_php --version=X.Y
+
+ -- Ondřej Surý <ondrej@debian.org>  Wed, 09 Dec 2015 11:45:25 +0100
+
+dh-php (0.4) unstable; urgency=medium
+
+  * Add extra ALL argument for ALL versions, fixes broken maintscripts
+
+ -- Ondřej Surý <ondrej@debian.org>  Wed, 09 Dec 2015 10:16:28 +0100
+
+dh-php (0.3) unstable; urgency=medium
+
+  * Rename the package just to dh-php (but the multiversion support is not yet there)
+  * Update Vcs-Urls to point to anonscm.debian.org
+  * Remove obsolete Conflicts/Replaces with php5-dev
+
+ -- Ondřej Surý <ondrej@debian.org>  Sun, 16 Aug 2015 14:38:14 +0200
+
+dh-php5 (0.2) unstable; urgency=medium
+
+  * Don't fail purge when php5-common is uninstalled (Closes: #745561)
+
+ -- Ondřej Surý <ondrej@debian.org>  Sun, 27 Apr 2014 15:11:09 +0200
+
+dh-php5 (0.1) unstable; urgency=low
+
+  * Initial release (Closes: #737842)
+
+ -- Ondřej Surý <ondrej@debian.org>  Thu, 13 Feb 2014 16:42:36 +0100

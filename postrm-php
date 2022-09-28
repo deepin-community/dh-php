@@ -1,0 +1,29 @@
+# Hey emacs, this is -*- shell-script -*-
+
+if [ "$1" = "remove" ]; then
+    if [ -e /usr/lib/php/php-maintscript-helper ] ; then
+	. /usr/lib/php/php-maintscript-helper
+
+	for version in #VERSIONS# ; do
+	    for name in #NAMES# ; do
+		php_invoke #HELPER# "$version" ALL "$name" || #ERROR_HANDLER#
+	    done
+	done
+    fi
+fi
+
+if [ "$1" = "purge" ] ; then
+    # Final cleanup of possible leftover symlinks
+    for version in #VERSIONS# ; do
+	inidir="/etc/php/$version"
+	for name in #NAMES#; do
+	    inifile="${name}.ini"
+	    find "${inidir}" -xtype l 2>/dev/null | \
+	    while read symlink; do
+	        if [ "$(basename "$(readlink -m "${symlink}")")" = "${inifile}" ]; then
+		    rm -f "${symlink}"
+		fi
+	    done
+	done
+    done
+fi

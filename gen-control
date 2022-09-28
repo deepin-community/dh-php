@@ -1,0 +1,41 @@
+#!/bin/sh
+
+# Sanity checks
+if [ ! -f debian/control.in ]; then
+    echo "Package not converted to dh-php >= 4";
+    exit 1;
+fi
+
+if dpkg --compare-versions "$(sed -ne 's/.*dh-php (>= \([.0-9~]*\)),/\1/p' debian/control.in)" lt 4~; then
+    echo "Package not converted to dh-php >= 4"; exit 1;
+fi
+
+PECL_NAME=$(dpkg-parsechangelog -SSource | sed -e 's/^php-//')
+
+{
+	# Source: php-<ext>
+	awk "/^Source: /,/^$/" debian/control.in
+	echo;
+
+	# Package: php-<ext>
+	awk "/^Package: php-${PECL_NAME}/,/^$/" debian/control.in
+	echo
+
+	# Package: php-<ext>-all-dev
+	awk "/^Package: php-${PECL_NAME}/,/^$/" debian/control.in | \
+	sed -e "s/^Architecture: any/Architecture: all/" \
+	    -e "s/^Package: php-${PECL_NAME}\(.*\)/Package: php-${PECL_NAME}-all-dev/"
+	echo
+
+	# Package: php<ver>-<ext>
+	{ if [ "$1" = "-a" ]; then
+		  /usr/share/dh-php/php-versions
+	  else
+		  php-config --version | sed -e 's,\.[^.]*$,,'
+	  fi } | while read -r ver; do
+		awk "/^Package: php-${PECL_NAME}/,/^$/" debian/control.in |
+		sed -e "s/^Architecture: all/Architecture: any/" \
+		    -e "s/^Package: php-${PECL_NAME}\(.*\)/Package: php${ver}-${PECL_NAME}/"
+		echo
+	done
+} > debian/control

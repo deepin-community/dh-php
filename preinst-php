@@ -1,0 +1,30 @@
+# Hey emacs, this is -*- shell-script -*-
+
+if [ "$1" = "upgrade" ]; then
+    # Cleanup of the old symlinks (including broken symlinks)
+    for version in #VERSIONS# ; do
+        inidir="/etc/php/${version}"
+	for name in #NAMES#; do
+	    inifile="${name}.ini"
+	    find "${inidir}" -xtype l 2>/dev/null | \
+	    while read symlink; do
+	        if [ "$(basename "$(readlink -m "${symlink}")")" = "${inifile}" ]; then
+		    rm -f "${symlink}"
+		fi
+	    done
+	done
+    done
+fi
+
+# Disable and then re-enable module on upgrades to deal with priority changes
+if [ "$1" = "upgrade" ]; then
+    if [ -e /usr/lib/php/php-maintscript-helper ] ; then
+	. /usr/lib/php/php-maintscript-helper
+
+	for version in #VERSIONS# ; do
+	    for name in #NAMES# ; do
+		php_invoke dismod "$version" ALL "$name" || #ERROR_HANDLER#
+	    done
+	done
+    fi
+fi
