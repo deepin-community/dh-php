@@ -332,8 +332,7 @@ foreach my $package ((@{$dh{DOPACKAGES}}))
 		{
 		    push @api_versions, php_api_version($version);
 		}
-# Disable the dependency on the phpapi for the transition period
-#		$depends .= ", " . join(" | ", @api_versions);
+		$depends .= ", " . join(" | ", @api_versions);
 		addsubstvar($package, "php:Depends", $depends);
 		
 		my $modules = join(" ", uniq(@{$PACKAGE_TYPE{'has_a_module'}}));
