@@ -2,40 +2,104 @@
 
 # Sanity checks
 if [ ! -f debian/control.in ]; then
-    echo "Package not converted to dh-php >= 4";
+    echo "Package not converted to dh-php >= 4" >&2
     exit 1;
 fi
 
 if dpkg --compare-versions "$(sed -ne 's/.*dh-php (>= \([.0-9~]*\)),/\1/p' debian/control.in)" lt 4~; then
-    echo "Package not converted to dh-php >= 4"; exit 1;
+    echo "Package not converted to dh-php >= 4" >&2
+    exit 1
 fi
 
-PECL_NAME=$(dpkg-parsechangelog -SSource | sed -e 's/^php-//')
+PECL_NAME=$(sed -n 's/^X-PHP-PECL-Name: //p' debian/control.in)
+if [ -z "$PECL_NAME" ]; then
+    PECL_NAME=$(dpkg-parsechangelog -SSource | sed -e 's/^php-//')
+fi
+
+__cmdline_php_versions() (
+    for v in "$@"; do
+	echo "$v";
+    done
+)
+
+if [ "$1" = "-a" ]; then
+    PHP__VERSIONS=$(sed -n 's/^X-PHP-Versions: //p' debian/control.in)
+    if [ -z "$PHP__VERSIONS" ]; then
+	PHP__VERSIONS=$(/usr/share/dh-php/php-versions)
+    fi
+elif [ -z "$*" ]; then
+    PHP__VERSIONS=$(sed -n 's/^X-PHP-Default-Version: //p' debian/control.in)
+    if [ -z "$PHP__VERSIONS" ]; then
+	PHP__VERSIONS=$(php-config --version | sed -e 's,\.[^.]*$,,')
+    fi
+else
+    PHP__VERSIONS=$(__cmdline_php_versions "$@")
+fi
+
+filter_php_versions() (
+    /usr/sbin/phpquery -V | while read v; do
+	if echo "${1}" | grep -q "${v}"; then
+	    echo "${v}"
+	fi
+    done
+)
+
+PHP_VERSIONS=$(filter_php_versions "${PHP__VERSIONS}")
+
+if [ -z "${PHP_VERSIONS}" ]; then
+	echo "No supported PHP version found in '${PHP__VERSIONS}'" >&2
+	exit 1
+fi
+
+prepare_all_dev() {
+    awk "/^Source: /,/^$/" debian/control.in | tr ',' '\n' | sed -n -e 's/^[[:space:]]*php-\(.*\)-all-dev.*/\1/gp' |
+	while read ALL_DEV_NAME; do
+	    printf "s#php-${ALL_DEV_NAME}-all-dev#"
+	    echo "$PHP_VERSIONS" | tr " " "\n" | while read -r ver; do
+		printf "php${ver}-${ALL_DEV_NAME}, "
+	    done
+	    printf "${SED_REPLACEMENT}php-${ALL_DEV_NAME}-all-dev#;"
+	done
+}
+
+SED_REPLACEMENT=$(prepare_all_dev)
 
 {
-	# Source: php-<ext>
-	awk "/^Source: /,/^$/" debian/control.in
-	echo;
+    # Source: php-<ext>
+    awk "/^Source: /,/^$/" debian/control.in | sed -e "${SED_REPLACEMENT}"
+    echo
 
+    GEN_DUMMY=$(sed -n 's/^X-PHP-Dummy-Package: //p' debian/control.in)
+    if [ "$GEN_DUMMY" != "no" ]; then    
 	# Package: php-<ext>
-	awk "/^Package: php-${PECL_NAME}/,/^$/" debian/control.in
+	awk "/^Package: php-${PECL_NAME}/,/^$/" debian/control.in | \
+	    sed -e "s/^Architecture: .*/Architecture: all/"
+        echo " ."
+        echo " This is empty package that depends on default PHP version."
 	echo
 
 	# Package: php-<ext>-all-dev
 	awk "/^Package: php-${PECL_NAME}/,/^$/" debian/control.in | \
-	sed -e "s/^Architecture: any/Architecture: all/" \
-	    -e "s/^Package: php-${PECL_NAME}\(.*\)/Package: php-${PECL_NAME}-all-dev/"
+	    sed -e "s/^Architecture: .*/Architecture: all/" \
+		-e "s/^Package: php-${PECL_NAME}\(.*\)/Package: php-${PECL_NAME}-all-dev/"
+	echo " ."
+	echo " This is empty package that depends on all PHP versions."
 	echo
+    fi
 
-	# Package: php<ver>-<ext>
-	{ if [ "$1" = "-a" ]; then
-		  /usr/share/dh-php/php-versions
-	  else
-		  php-config --version | sed -e 's,\.[^.]*$,,'
-	  fi } | while read -r ver; do
-		awk "/^Package: php-${PECL_NAME}/,/^$/" debian/control.in |
+    # Package: php<ver>-<ext>
+    echo "$PHP_VERSIONS" | tr " " "\n" | while read -r ver; do
+	if [ -n "${BREAKS_NAME}" ]; then
+	    awk "/^Package: php-${PECL_NAME}/,/^$/" debian/control.in |
+		sed -e "s/^Architecture: all/Architecture: any/" \
+		    -e "s/^Package: php-${PECL_NAME}\(.*\)/Package: php${ver}-${PECL_NAME}/" \
+		    -e "s/^Breaks: php-${BREAKS_NAME} /Breaks: php${ver}-${BREAKS_NAME} /" \
+		    -e "s/^Replaces: php-${BREAKS_NAME} /Replaces: php${ver}-${BREAKS_NAME} /"
+	else
+	    awk "/^Package: php-${PECL_NAME}/,/^$/" debian/control.in |
 		sed -e "s/^Architecture: all/Architecture: any/" \
 		    -e "s/^Package: php-${PECL_NAME}\(.*\)/Package: php${ver}-${PECL_NAME}/"
-		echo
-	done
-} > debian/control
+	fi
+	echo
+    done
+} | cat -s > debian/control
